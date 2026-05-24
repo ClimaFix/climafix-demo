@@ -18,7 +18,7 @@ function Login() {
     
     try {
       let response;
-      const API_URL = 'http://localhost:8000';
+      const API_URL = 'https://climafix-api.onrender.com';
       
       if (isLogin) {
         response = await axios.post(`${API_URL}/api/auth/login`, { 

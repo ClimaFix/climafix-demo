@@ -31,8 +31,8 @@ function Dashboard() {
     const fetchData = async () => {
       try {
         const [kpisRes, trendRes] = await Promise.all([
-          axios.get('http://localhost:8000/api/dashboard/kpis', { params: { token } }),
-          axios.get('http://localhost:8000/api/dashboard/trend', { params: { token } })
+          axios.get('https://climafix-api.onrender.com/api/dashboard/kpis', { params: { token } }),
+          axios.get('https://climafix-api.onrender.com/api/dashboard/trend', { params: { token } })
         ]);
         setKpis(kpisRes.data);
         setTrend(trendRes.data);

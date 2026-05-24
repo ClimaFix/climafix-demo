@@ -24,7 +24,7 @@ function DataEntry() {
   const fetchData = async () => {
     const token = localStorage.getItem('token');
     try {
-      const res = await axios.get('http://localhost:8000/api/data/monthly', { params: { token } });
+      const res = await axios.get('https://climafix-api.onrender.com/api/data/monthly', { params: { token } });
       setDataList(res.data);
     } catch (err) {
       console.error(err);
@@ -35,7 +35,7 @@ function DataEntry() {
     e.preventDefault();
     const token = localStorage.getItem('token');
     try {
-      await axios.post('http://localhost:8000/api/data/monthly', {
+      await axios.post('https://climafix-api.onrender.com/api/data/monthly', {
         month,
         electricity_kwh: parseFloat(electricity),
         diesel_liters: parseFloat(diesel),
