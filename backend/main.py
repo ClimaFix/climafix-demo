@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timedelta
@@ -109,18 +110,47 @@ async def get_current_user(token: str):
         raise credentials_exception
 
 # ==================== FASTAPI APP ====================
-app = FastAPI(title="CLIMAFIX API", version="1.0.0")
-
-# CORS Middleware - MUST be before routes
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins temporarily
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+app = FastAPI(
+    title="CLIMAFIX API",
+    version="1.0.0",
+    description="DMRV Platform for Textile MSMEs"
 )
 
-# Database connection events
+# ==================== CORS MIDDLEWARE (PERMANENT FIX) ====================
+# List of allowed origins (your frontend domains)
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",           # Local Vite dev
+    "http://localhost:3000",           # Local React dev
+    "https://climafix-demo.vercel.app", # Live Vercel frontend
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
+    expose_headers=["Content-Length", "X-Kuma-Revision"],
+    max_age=86400,  # 24 hours cache for preflight requests
+)
+
+# Optional: Trusted Host Middleware for security (prevents Host Header attacks)
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=[
+        "climafix-api.onrender.com",
+        "localhost",
+        "127.0.0.1",
+    ]
+)
+
+# ==================== OPTIONS HANDLER FOR PREFLIGHT REQUESTS ====================
+@app.options("/{rest_of_path:path}")
+async def preflight_handler():
+    """Handle OPTIONS requests for CORS preflight"""
+    return {}
+
+# ==================== DATABASE CONNECTION EVENTS ====================
 @app.on_event("startup")
 async def startup():
     await database.connect()
@@ -129,7 +159,7 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
-# Root endpoint
+# ==================== ROOT ENDPOINT ====================
 @app.get("/")
 async def root():
     return {"message": "CLIMAFIX API is running"}
@@ -220,6 +250,23 @@ async def get_monthly_data(token: str):
     )
     
     return [dict(row) for row in rows]
+
+@app.delete("/api/data/monthly/{data_id}")
+async def delete_monthly_data(data_id: str, token: str):
+    current_user = await get_current_user(token)
+    tenant_id = current_user["tenant_id"]
+    
+    result = await database.execute(
+        monthly_data.delete().where(
+            monthly_data.c.id == data_id,
+            monthly_data.c.tenant_id == tenant_id
+        )
+    )
+    
+    if result == 0:
+        raise HTTPException(404, "Data not found")
+    
+    return {"message": "Data deleted successfully"}
 
 # ==================== DASHBOARD ENDPOINTS ====================
 @app.get("/api/dashboard/kpis")
