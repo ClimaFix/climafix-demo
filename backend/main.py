@@ -112,11 +112,16 @@ async def get_current_user(token: str):
 app = FastAPI(title="CLIMAFIX API", version="1.0.0")
 
 # Add CORS middleware
+from fastapi.middleware.cors import CORSMiddleware
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[ "http://localhost:5173",
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
         "https://climafix-demo.vercel.app",
-        "https://climafix-api.onrender.com"],
+        "https://climafix-api.onrender.com"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
