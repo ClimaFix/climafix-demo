@@ -114,12 +114,7 @@ app = FastAPI(title="CLIMAFIX API", version="1.0.0")
 # CORS Middleware - MUST be before routes
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "https://climafix-demo.vercel.app",
-        "https://climafix-api.onrender.com"
-    ],
+    allow_origins=["*"],  # Allow all origins temporarily
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
