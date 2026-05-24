@@ -111,9 +111,7 @@ async def get_current_user(token: str):
 # ==================== FASTAPI APP ====================
 app = FastAPI(title="CLIMAFIX API", version="1.0.0")
 
-# Add CORS middleware
-from fastapi.middleware.cors import CORSMiddleware
-
+# CORS Middleware - MUST be before routes
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -127,12 +125,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Root endpoint
-@app.get("/")
-async def root():
-    return {"message": "CLIMAFIX API is running"}
-
-# ==================== DATABASE CONNECTION ====================
+# Database connection events
 @app.on_event("startup")
 async def startup():
     await database.connect()
@@ -140,6 +133,11 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await database.disconnect()
+
+# Root endpoint
+@app.get("/")
+async def root():
+    return {"message": "CLIMAFIX API is running"}
 
 # ==================== AUTH ENDPOINTS ====================
 @app.post("/api/auth/register")
