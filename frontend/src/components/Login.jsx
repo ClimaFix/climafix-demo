@@ -21,15 +21,16 @@ function Login() {
       const API_URL = 'https://climafix-api.onrender.com';
       
       if (isLogin) {
-        response = await axios.post(`${API_URL}/api/auth/login`, { 
-          email, 
-          password 
-        });
-      } else {
-        response = await axios.post(`${API_URL}/api/auth/register`, { 
-          name, 
-          email, 
-          password 
+        response = await axios.post(`${API_URL}/api/login`, { 
+  email, 
+  password 
+});
+// and
+response = await axios.post(`${API_URL}/api/register`, { 
+  name, 
+  email, 
+  password 
+});
         });
       }
       
