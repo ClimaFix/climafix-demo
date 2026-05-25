@@ -23,8 +23,8 @@ function Report() {
     const token = localStorage.getItem('token');
     try {
       const [kpisRes, trendRes] = await Promise.all([
-        axios.get('http://localhost:8000/api/dashboard/kpis', { params: { token } }),
-        axios.get('http://localhost:8000/api/dashboard/trend', { params: { token } })
+	axios.get('https://climafix-demo.onrender.com/api/dashboard/kpis', { params: { token } }),
+	axios.get('https://climafix-demo.onrender.com/api/dashboard/trend', { params: { token } })
       ]);
       setKpis(kpisRes.data);
       setTrend(trendRes.data);

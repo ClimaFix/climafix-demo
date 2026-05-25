@@ -45,7 +45,7 @@ function Login() {
       if (err.response) {
         setError(err.response.data?.detail || `Server error: ${err.response.status}`);
       } else if (err.request) {
-        setError('Cannot reach server. Make sure backend is running on port 8000');
+        setError('Cannot reach server. Make sure backend is running on port 8001');
       } else {
         setError(err.message || 'Something went wrong');
       }
